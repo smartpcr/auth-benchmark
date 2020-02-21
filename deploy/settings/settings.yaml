@@ -1,0 +1,78 @@
+global:
+  envName: dev
+  spaceName: xd
+  subscriptionName: xiaodoli
+  tenantId: 72f988bf-86f1-41af-91ab-2d7cd011db47
+  resourceGroup:
+    name: functions-rg
+    location: westus2
+terraform:
+  spn: bedrock-terraform-spn
+  resourceGroup:
+    name: "{{.Values.global.resourceGroup.name}}"
+    location: "{{.Values.global.resourceGroup.location}}"
+  backend:
+    storageAccount: "functions{{.Values.global.envName}}tfstate"
+    envContainerName: "functions{{.Values.global.envName}}"
+    spaceContainerName: "functions{{.Values.global.envName}}-{{.Values.global.spaceName}}"
+    apps: apps
+kv:
+  name: "functions-{{.Values.global.envName}}-kv"
+  resourceGroup:
+    name: "{{.Values.global.resourceGroup.name}}"
+    location: "{{.Values.global.resourceGroup.location}}"
+  readers:
+    - "{{.Values.userIdentity.reader.name}}"
+  writers:
+    - "{{.Values.terraform.spn}}"
+storage:
+  name: "functionsstore{{.Values.global.envName}}"
+  resourceGroup:
+    name: "{{.Values.global.resourceGroup.name}}"
+    location: "{{.Values.global.resourceGroup.location}}"
+  containers:
+    artifacts:
+      name: artifacts
+    events:
+      name: events
+    anomalies:
+      name: anomalies
+    alerts:
+      name: alerts
+  readers:
+    - "{{.Values.userIdentity.reader.name}}"
+  writers:
+    - "{{.Values.userIdentity.writer.name}}"
+eventhub:
+  namespace: functions-{{.Values.global.envName}}-ns
+  name: functions-{{.Values.global.envName}}-events
+  resourceGroup:
+    name: "{{.Values.global.resourceGroup.name}}"
+    location: "{{.Values.global.resourceGroup.location}}"
+cosmosdb:
+  importFromFile: "cosmosdb.yaml"
+appInsights:
+  name: "functions-{{.Values.global.envName}}-ai"
+  resourceGroup:
+    name: "{{.Values.global.resourceGroup.name}}"
+    location: "{{.Values.global.resourceGroup.location}}"
+  secrets:
+    instrumentationKey: sace-{{.Values.global.envName}}-ai-instrumentation-key
+    appId: sace-{{.Values.global.envName}}-ai-app-id
+  contributors:
+    - name: "xiaodoli@microsoft.com" # this makes sure that ai created in prod subscription is still accessible by team members, make sure group is security enabled
+      type: user
+      objectId: "055fc243-14b8-4977-9a3c-3cccda2bfdcd"
+userIdentity:
+  reader:
+    name: "functions-{{.Values.global.envName}}-{{.Values.global.spaceName}}-reader"
+    resourceGroup:
+      name: "{{.Values.global.resourceGroup.name}}"
+      location: "{{.Values.global.resourceGroup.location}}"
+  writer:
+    name: "functions-{{.Values.global.envName}}-{{.Values.global.spaceName}}-writer"
+    resourceGroup:
+      name: "{{.Values.global.resourceGroup.name}}"
+      location: "{{.Values.global.resourceGroup.location}}"
+apps:
+  importFromFile: "apps.yaml"

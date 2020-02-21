@@ -1,0 +1,7 @@
+apps:
+  functionApp:
+    name: functions-{{.Values.global.envName}}-{{.Values.global.spaceName}}-app
+    resourceGroup:
+      name: "{{.Values.global.resourceGroup.name}}"
+      location: "{{.Values.global.resourceGroup.location}}"
+    identity: "{{.Values.userIdentity.writer.name}}"

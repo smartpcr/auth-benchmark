@@ -1,0 +1,87 @@
+cosmosdb: # shared among spaces
+  source: cosmosdb.yaml
+  account: functions-{{.Values.global.envName}}
+  authKey: functions-{{.Values.global.envName}}-authkey
+  consistency: Strong
+  resourceGroup:
+    name: {{.Values.global.resourceGroup.name}}
+    location: {{.Values.global.resourceGroup.location}}
+  dbs:
+    - name: events
+      collections:
+        - name: amps
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+        - name: voltage
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+        - name: temperature
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+    - name: anomalies
+      collections:
+        - name: amps
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+        - name: voltage
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+        - name: temperature
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+    - name: alerts
+      collections:
+        - name: amps
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+        - name: voltage
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
+        - name: temperature
+          throughput: 400
+          partition: "env_time, dc_name"
+          sps:
+            - name: bulkUpsert
+              file: "/cosmosdb/procedures/bulkUpsert.js"
+            - name: bulkDelete
+              file: "/cosmosdb/procedures/bulkDelete.js"
