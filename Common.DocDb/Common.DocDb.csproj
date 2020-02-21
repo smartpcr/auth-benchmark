@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Ensure.That" Version="8.1.1" />
+        <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.3" />
+        <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common.Auth\Common.Auth.csproj" />
+      <ProjectReference Include="..\Common.KeyVault\Common.KeyVault.csproj" />
+    </ItemGroup>
+</Project>
