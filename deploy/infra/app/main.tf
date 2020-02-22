@@ -49,6 +49,7 @@ resource "azurerm_function_app" "function_app" {
   resource_group_name       = "${azurerm_resource_group.rg.name}"
   app_service_plan_id       = "${azurerm_app_service_plan.svcplan.id}"
   storage_connection_string = "${azurerm_storage_account.store.primary_connection_string}"
+  runtime = "~3"
 
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = "${azurerm_application_insights.app_insights.instrumentation_key}"

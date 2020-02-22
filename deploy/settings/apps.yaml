@@ -5,3 +5,4 @@ apps:
       name: "{{.Values.global.resourceGroup.name}}"
       location: "{{.Values.global.resourceGroup.location}}"
     identity: "{{.Values.userIdentity.writer.name}}"
+    projectFolder: "src/Functions/HelloWorld"
