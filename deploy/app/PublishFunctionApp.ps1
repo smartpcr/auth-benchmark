@@ -1,7 +1,13 @@
 
 param(
-    [string]$GitRootFolder,
+    [Parameter(Position = 0, mandatory = $true)]
     [string]$AppName,
+
+    [Parameter(Position = 1, mandatory = $true)]
+    [ValidateScript( { Test-Path $_ })]
+    [string]$GitRootFolder,
+
+    [Parameter(Position = 2, mandatory = $true)]
     [object]$AppRelativeFolder
 )
 
@@ -16,6 +22,7 @@ if (-not (Test-Path $scriptFolder)) {
 $moduleFolder = Join-Path $scriptFolder "modules"
 Import-Module (Join-Path $moduleFolder "Logging.psm1") -Force
 Import-Module (Join-Path $moduleFolder "Common.psm1") -Force
+InitializeLogger -ScriptFolder $scriptFolder -ScriptName "Publish App"
 
 $appFolder = Join-Path $GitRootFolder $AppRelativeFolder
 if (-not (Test-Path $appFolder)) {
