@@ -24,7 +24,7 @@ alerts_container="{{.Values.storage.containers.alerts.name}}"
 # cosmosdb
 cosmosdb_account="{{.Values.cosmosdb.account}}"
 
-# function app
-function_app_name="{{.Values.apps.functionApp.name}}"
-git_root_folder="{{.Values.apps.functionApp.gitRootFolder}}"
-app_relative_folder="{{.Values.apps.functionApp.projectFolder}}"
+# helloWorld function app
+function_app_name="{{.Values.apps.helloWorld.name}}"
+git_root_folder="{{.Values.apps.helloWorld.gitRootFolder}}"
+app_relative_folder="{{.Values.apps.helloWorld.projectFolder}}"

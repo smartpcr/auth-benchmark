@@ -24,8 +24,8 @@ if (-not (Test-Path $appFolder)) {
 UsingScope("publish app") {
     Set-Location $appFolder
     LogStep -Message "publish function app..."
-    func azure functionapp publish $settings.apps.functionApp.name
-    
+    func azure functionapp publish $settings.apps.helloWorld.name
+
     Set-Location $GitRootFolder
     LogStep -Message "Done!"
 }

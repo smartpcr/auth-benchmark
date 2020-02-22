@@ -73,9 +73,9 @@ UsingScope("Ensure user identities") {
 }
 
 UsingScope("Ensure app resource group") {
-    [array]$appRgs = az group list --query "[?name=='$($settings.apps.functionApp.resourceGroup.name)']" | ConvertFrom-Json
+    [array]$appRgs = az group list --query "[?name=='$($settings.apps.helloWorld.resourceGroup.name)']" | ConvertFrom-Json
     if ($null -eq $appRgs -or $appRgs.Count -eq 0) {
-        $rg = az group create -n $settings.apps.functionApp.resourceGroup.name --location $settings.apps.functionApp.resourceGroup.location | ConvertFrom-Json
+        $rg = az group create -n $settings.apps.helloWorld.resourceGroup.name --location $settings.apps.helloWorld.resourceGroup.location | ConvertFrom-Json
         LogStep -Message "Created resource group '$($rg.name)'"
     }
     else {
@@ -171,7 +171,7 @@ UsingScope("Ensure terraform backend") {
 }
 
 UsingScope("Populate function app settings") {
-    $settings.apps.functionApp["gitRootFolder"] = $gitRootFolder
+    $settings.apps.helloWorld["gitRootFolder"] = $gitRootFolder
 }
 
 UsingScope("Setup terraform variables") {
