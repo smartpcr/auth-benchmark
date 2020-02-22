@@ -2,6 +2,10 @@ terraform {
   backend "azurerm" {}
 }
 
+provider "azurerm" {
+  version = "~>1.44"
+}
+
 provider "null" {
   version = "~>2.1.2"
 }
