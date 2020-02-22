@@ -13,12 +13,12 @@ variable "location" {
     default = "westus2"
 }
 
-# key vault 
+# key vault
 variable "vault_name" {
     type = "string"
 }
 
-# storage 
+# storage
 variable "storage_account" {
     type = "string"
 }
@@ -52,7 +52,7 @@ variable "iot_hub_name" {
 
 variable "iot_sku" {
     type = "string"
-    default = "S1" 
+    default = "S1"
     description = "allowed values: B1, B2, B3, F1, S1, S2, S3"
 }
 

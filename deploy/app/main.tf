@@ -31,7 +31,7 @@ resource "azurerm_storage_container" "artifacts" {
 }
 
 resource "azurerm_storage_account" "telemetry_store" {
-  name                     = "${var.telemetry_storeage_account}"
+  name                     = "${var.telemetry_storage_account}"
   resource_group_name      = "${azurerm_resource_group.rg.name}"
   location                 = "${azurerm_resource_group.rg.location}"
   account_tier             = "Standard"
@@ -93,7 +93,7 @@ resource "azurerm_function_app" "function_app" {
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = "${azurerm_application_insights.app_insights.instrumentation_key}"
     VaultName                      = "${var.vault_name}"
-    StorageAccount                 = "${var.storage_account}"
+    StorageAccount                 = "${var.telemetry_storage_account}"
     EventsContainer                = "${var.events_container}"
     AnomaliesContainer             = "${var.anomalies_container}"
     AlertsContainer                = "${var.alerts_container}"
@@ -115,7 +115,7 @@ resource "azurerm_function_app" "function_app" {
 
 resource "null_resource" "publish_function_app" {
   provisioner "local-exec" {
-    command = "pwsh ${path.module}/PublishFunctionApp.ps1 -GitRootFolder ${var.git_root_folder} -AppRelativeFolder ${var.app_relative_folder}"
+    command = "pwsh ${path.module}/PublishFunctionApp.ps1 -AppName ${var.function_app_name} -GitRootFolder ${var.git_root_folder} -AppRelativeFolder ${var.app_relative_folder}"
   }
 
   depends_on = ["azurerm_function_app.function_app"]

@@ -16,9 +16,9 @@ app_identity_name="{{.Values.userIdentity.writer.name}}"
 # storage
 provision_storage_account="{{.Values.apps.storage.account}}"
 artifact_container="{{.Values.storage.containers.artifacts.name}}"
-telemetry_storeage_account="{{.Values.storage.account}}"
+telemetry_storage_account="{{.Values.storage.account}}"
 events_container="{{.Values.storage.containers.events.name}}"
-anomaliess_container="{{.Values.storage.containers.anomalies.name}}"
+anomalies_container="{{.Values.storage.containers.anomalies.name}}"
 alerts_container="{{.Values.storage.containers.alerts.name}}"
 
 # cosmosdb

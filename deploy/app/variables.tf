@@ -36,7 +36,7 @@ variable "artifact_container" {
   default = "artifacts"
 }
 
-variable "telemetry_storeage_account" {
+variable "telemetry_storage_account" {
   type = "string"
 }
 

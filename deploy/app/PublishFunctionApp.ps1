@@ -1,6 +1,7 @@
 
 param(
     [string]$GitRootFolder,
+    [string]$AppName,
     [object]$AppRelativeFolder
 )
 
@@ -24,7 +25,7 @@ if (-not (Test-Path $appFolder)) {
 UsingScope("publish app") {
     Set-Location $appFolder
     LogStep -Message "publish function app..."
-    func azure functionapp publish $settings.apps.helloWorld.name
+    func azure functionapp publish $AppName
 
     Set-Location $GitRootFolder
     LogStep -Message "Done!"
