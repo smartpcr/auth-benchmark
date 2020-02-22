@@ -27,13 +27,17 @@ variable "vault_name" {
 }
 
 # storage
-variable "storage_account" {
+variable "provision_storage_account" {
   type = "string"
 }
 
 variable "artifact_container" {
   type = "string"
   default = "artifacts"
+}
+
+variable "telemetry_storeage_account" {
+  type = "string"
 }
 
 variable "events_container" {

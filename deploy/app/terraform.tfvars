@@ -14,8 +14,9 @@ app_insights_name="{{.Values.appInsights.name}}"
 app_identity_name="{{.Values.userIdentity.writer.name}}"
 
 # storage
-storage_account="{{.Values.storage.account}}"
+provision_storage_account="{{.Values.apps.storage.account}}"
 artifact_container="{{.Values.storage.containers.artifacts.name}}"
+telemetry_storeage_account="{{.Values.storage.account}}"
 events_container="{{.Values.storage.containers.events.name}}"
 anomaliess_container="{{.Values.storage.containers.anomalies.name}}"
 alerts_container="{{.Values.storage.containers.alerts.name}}"

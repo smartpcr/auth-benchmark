@@ -1,34 +1,17 @@
+
+terraform {
+  backend "azurerm" {}
+}
+
 provider "azurerm" {
   subscription_id = "${var.subscription_id}"
+  version         = "~>1.44"
 }
 
-data "azurerm_key_vault" "vault" {
-  name                = "${var.vault_name}"
-  resource_group_name = "${var.resource_group_name}"
+provider "null" {
+  version = "~>2.1.2"
 }
 
-# storage 
-resource "azurerm_storage_account" "account" {
-  name                     = "${var.storage_account}"
-  resource_group_name      = "${var.resource_group_name}"
-  location                 = "${var.location}"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-resource "azurerm_storage_container" "events" {
-  name                  = "${var.events_container}"
-  storage_account_name  = "${azurerm_storage_account.account.name}"
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "lease" {
-  name                  = "${var.lease_container}"
-  storage_account_name  = "${azurerm_storage_account.account.name}"
-  container_access_type = "private"
-}
-
-# event hub
 resource "azurerm_eventhub_namespace" "eventhub_namespace" {
   name                = "${var.event_hub_namespace}"
   resource_group_name = "${var.resource_group_name}"
@@ -53,7 +36,6 @@ resource "azurerm_eventhub_authorization_rule" "eventhub_authkey" {
   send                = true
 }
 
-# iot hub
 resource "azurerm_iothub" "iothub" {
   name                = "${var.iot_hub_name}"
   resource_group_name = "${var.resource_group_name}"

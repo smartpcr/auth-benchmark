@@ -1,6 +1,11 @@
 apps:
-  functionApp:
-    name: functions-{{.Values.global.envName}}-{{.Values.global.spaceName}}-app
+  storage:
+    account: "provisionstore{{.Values.global.envName}}{{.Values.global.spaceName}}"
+    resourceGroup:
+      name: "{{.Values.global.resourceGroup.name}}"
+      location: "{{.Values.global.resourceGroup.location}}"
+  helloWorld:
+    name: helloworld-{{.Values.global.envName}}-{{.Values.global.spaceName}}-func-app
     resourceGroup:
       name: "{{.Values.global.resourceGroup.name}}"
       location: "{{.Values.global.resourceGroup.location}}"
