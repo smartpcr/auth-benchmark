@@ -1,3 +1,7 @@
+provider "null" {
+  version = "~>2.1.2"
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group_name}"
   location = "${var.location}"
@@ -73,7 +77,7 @@ resource "azurerm_function_app" "function_app" {
   ]
 }
 
-resource "null" "publish_function_app" {
+resource "null_resource" "publish_function_app" {
   provisioner "local-exec" {
     command = "pwsh ${path.module}/PublishFunctionApp.ps1 -EnvName ${var.env_name} -SpaceName ${var.space_name}"
   }

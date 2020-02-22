@@ -363,7 +363,7 @@ function GenerateTerraformManifest() {
         Remove-Item $terraformInitFolder -Recurse -Force
     }
 
-    LogStep -Message "populating script: RunTerraform.ps1"
+    LogStep -Message "populating tf file paths"
     $Settings.terraform["backendFile"] = Join-Path $TerraformOutputFolder "backend.tfvars"
     $Settings.terraform["tfvarsFile"] = Join-Path $TerraformOutputFolder "terraform.tfvars"
     $Settings.terraform["tfPlanOutputFile"] = Join-Path $TerraformOutputFolder "tf_plan_out"

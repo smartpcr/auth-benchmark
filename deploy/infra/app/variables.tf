@@ -6,6 +6,13 @@ variable "tenant_id" {
   type = "string"
 }
 
+variable "env_name" {
+  type = "string"
+}
+
+variable "space_name" {
+  type = "string"
+}
 
 variable "resource_group_name" {
   type = "string"
@@ -44,7 +51,7 @@ variable "alerts_container" {
   default = "alerts"
 }
 
-# function 
+# function
 variable "service_plan_name" {
   type = "string"
   default = "service_plan"
