@@ -51,6 +51,11 @@ variable "alerts_container" {
   default = "alerts"
 }
 
+# cosmos db
+variable "cosmosdb_account" {
+  type = "string"
+}
+
 # function
 variable "service_plan_name" {
   type = "string"
@@ -67,5 +72,14 @@ variable "app_identity_name" {
 }
 
 variable "app_insights_name" {
+  type = "string"
+}
+
+# iot tool
+variable "git_root_folder" {
+  type = "string"
+}
+
+variable "app_relative_folder" {
   type = "string"
 }

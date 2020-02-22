@@ -1,3 +1,7 @@
+terraform {
+  backend "azurerm" {}
+}
+
 provider "null" {
   version = "~>2.1.2"
 }
@@ -62,6 +66,7 @@ resource "azurerm_function_app" "function_app" {
     EventsContainer = "${var.events_container}"
     AnomaliesContainer = "${var.anomalies_container}"
     AlertsContainer = "${var.alerts_container}"
+    CosmosDbAccount = "${var.cosmosdb_account}"
   }
 
   identity {
@@ -79,7 +84,7 @@ resource "azurerm_function_app" "function_app" {
 
 resource "null_resource" "publish_function_app" {
   provisioner "local-exec" {
-    command = "pwsh ${path.module}/PublishFunctionApp.ps1 -EnvName ${var.env_name} -SpaceName ${var.space_name}"
+    command = "pwsh ${path.module}/PublishFunctionApp.ps1 -GitRootFolder ${var.git_root_folder} -AppRelativeFolder ${var.app_relative_folder}"
   }
 
   depends_on = ["azurerm_function_app.function_app"]

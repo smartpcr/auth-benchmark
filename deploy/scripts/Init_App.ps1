@@ -23,8 +23,7 @@ Import-Module (Join-Path $moduleFolder "YamlUtil.psm1") -Force -DisableNameCheck
 Import-Module (Join-Path $moduleFolder "Settings.psm1") -Force
 Import-Module (Join-Path $moduleFolder "VaultUtil.psm1") -Force
 
-$infraFolder = Join-Path $deployFolder "infra"
-$appInfraFolder = Join-Path $infraFolder "app"
+$appInfraFolder = Join-Path $deployFolder "app"
 $tempFolder = Join-Path $scriptFolder "temp"
 if (-not (Test-Path $tempFolder)) {
     New-Item $tempFolder -ItemType Directory -Force | Out-Null
@@ -169,6 +168,10 @@ UsingScope("Ensure terraform spn") {
 
 UsingScope("Ensure terraform backend") {
     EnsureTerraformBackend -Settings $settings -IsSharedResource $false
+}
+
+UsingScope("Populate function app settings") {
+    $settings.apps.functionApp["gitRootFolder"] = $gitRootFolder
 }
 
 UsingScope("Setup terraform variables") {
