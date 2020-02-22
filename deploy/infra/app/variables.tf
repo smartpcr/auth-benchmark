@@ -15,6 +15,11 @@ variable "location" {
   type = "string"
 }
 
+variable "vault_name" {
+  type = "string"
+}
+
+# storage
 variable "storage_account" {
   type = "string"
 }
@@ -24,6 +29,22 @@ variable "artifact_container" {
   default = "artifacts"
 }
 
+variable "events_container" {
+  type = "string"
+  default = "events"
+}
+
+variable "anomalies_container" {
+  type = "string"
+  default = "anomalies"
+}
+
+variable "alerts_container" {
+  type = "string"
+  default = "alerts"
+}
+
+# function 
 variable "service_plan_name" {
   type = "string"
   default = "service_plan"

@@ -177,6 +177,11 @@ UsingScope("Setup terraform variables") {
         -TerraformOutputFolder $terraformOutputFolder `
         -ScriptFolder $scriptFolder `
         -Settings $settings
+
+    $additionalFiles = @(
+        "PublishFunctionApp.ps1"
+    )
+    CopyFiles -SourceFolder $appInfraFolder -TargetFolder $terraformOutputFolder -Files $additionalFiles
 }
 
 UsingScope("Done") {

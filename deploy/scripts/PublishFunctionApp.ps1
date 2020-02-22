@@ -44,26 +44,10 @@ UsingScope("retrieve app settings") {
     }
     Set-Location $appFolder
 
-    LogStep -Message "retrieve settings..."
-    func azure functionapp fetch-app-settings $settings.apps.functionApp.name
-
-    LogStep -Message "retrieve connection string..."
-    func azure storage fetch-connection-string $settings.storage.name
-
-    LogStep -Message "build app..."
-    dotnet build
-
-    LogStep -Message "adding additional settings..."
-    $localSettingFile = Join-Path $appFolder "local.settings.json"
-    $localSettings = Get-Content $localSettingFile | ConvertFrom-Json
-    if ($null -ne ($localSettings.Values.PSobject.Properties.name -match "foo")) {
-        $localSettings.Values.foo = "bar"
-    }
-    else {
-        $localSettings.Values | Add-Member NoteProperty "foo" "bar"
-    }
-    $localSettings | ConvertTo-Json | ToFile -File $localSettingFile
-
     LogStep -Message "publish function app..."
     func azure functionapp publish $settings.apps.functionApp.name
+}
+
+UsingScope("done") {
+    LogInfo -Message "Finished!"
 }

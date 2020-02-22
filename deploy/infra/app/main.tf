@@ -49,10 +49,15 @@ resource "azurerm_function_app" "function_app" {
   resource_group_name       = "${azurerm_resource_group.rg.name}"
   app_service_plan_id       = "${azurerm_app_service_plan.svcplan.id}"
   storage_connection_string = "${azurerm_storage_account.store.primary_connection_string}"
-  runtime = "~3"
+  version = "~3"
 
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY = "${azurerm_application_insights.app_insights.instrumentation_key}"
+    VaultName = "${var.vault_name}"
+    StorageAccount = "${var.storage_account}"
+    EventsContainer = "${var.events_container}"
+    AnomaliesContainer = "${var.anomalies_container}"
+    AlertsContainer = "${var.alerts_container}"
   }
 
   identity {
@@ -66,4 +71,12 @@ resource "azurerm_function_app" "function_app" {
     "azurerm_application_insights.app_insights",
     "azurerm_user_assigned_identity.app_identity"
   ]
+}
+
+resource "null" "publish_function_app" {
+  provisioner "local-exec" {
+    command = "pwsh ${path.module}/PublishFunctionApp.ps1 -EnvName ${var.env_name} -SpaceName ${var.space_name}"
+  }
+
+  depends_on = ["azurerm_function_app.function_app"]
 }
