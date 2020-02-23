@@ -9,15 +9,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Common.Auth;
 using Common.KeyVault;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Rest;
 
 namespace BlobStore
 {
@@ -41,7 +38,7 @@ namespace BlobStore
             _aadSettings = new AadSettings();
             configuration.Bind(nameof(AadSettings), _aadSettings);
             _logger = loggerFactory.CreateLogger<BlobStoreClient>();
-            
+
             if (string.IsNullOrEmpty(_blobSettings.ContainerName))
             {
                 _logger?.LogInformation($"creating blob client using aad credential");
@@ -68,7 +65,7 @@ namespace BlobStore
 
         public async Task SyncFilesToCloud(string folderPath, CancellationToken cancellationToken)
         {
-            
+
             throw new NotImplementedException();
         }
     }
