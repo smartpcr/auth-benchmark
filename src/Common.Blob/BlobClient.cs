@@ -41,7 +41,7 @@ namespace Common.Blob
             _logger.LogInformation($"uploading {blobPath}...");
             var blobClient = _containerClient.GetBlobClient(blobPath);
             var uploadResponse = await blobClient.UploadAsync(new MemoryStream(Encoding.UTF8.GetBytes(blobContent)), cancellationToken);
-            _logger.LogInformation($"uploaded blob: {uploadResponse.Value.BlobSequenceNumber}");
+            _logger.LogInformation($"uploaded blob: {blobPath}");
         }
 
         public async Task Download(string blobFolder, string blobName, string localFolder, CancellationToken cancellationToken)

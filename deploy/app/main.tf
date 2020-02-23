@@ -115,15 +115,11 @@ resource "azurerm_function_app" "function_app" {
 }
 
 resource "null_resource" "assign_msi_access" {
+  count = "${var.function_app_name != "" && var.telemetry_storage_account != "" ? 1 : 0}"
+
   provisioner "local-exec" {
-    command = <<-EOT
-      "pwsh ${path.module}/GrantFunctionAppMsiPermissions.ps1 \
-      -AppName ${var.function_app_name} \
-      -GitRootFolder \"${var.git_root_folder}\" \
-      -ResourceGroupName ${azurerm_resource_group.rg.name} \
-      -SubscriptionId ${var.subscription_id} \
-      -StorageAccountName ${var.telemetry_storage_account}"
-    EOT
+    # multiline syntax only support within module
+    command = "pwsh ./GrantFunctionAppMsiPermissions.ps1 -AppName ${var.function_app_name} -GitRootFolder \"${var.git_root_folder}\" -ResourceGroupName ${azurerm_resource_group.rg.name} -SubscriptionId ${var.subscription_id} -StorageAccountName ${var.telemetry_storage_account}"
   }
 
   triggers = {
@@ -135,13 +131,11 @@ resource "null_resource" "assign_msi_access" {
 }
 
 resource "null_resource" "publish_function_app" {
+  count = "${var.function_app_name != "" && var.telemetry_storage_account != "" ? 1 : 0}"
+
   provisioner "local-exec" {
-    command = <<-EOT
-      "pwsh ${path.module}/PublishFunctionApp.ps1 \
-      -AppName ${var.function_app_name} \
-      -GitRootFolder \"${var.git_root_folder}\" \
-      -AppRelativeFolder \"${var.app_relative_folder}\""
-    EOT
+    # multiline syntax only support within module
+    command = "pwsh ./PublishFunctionApp.ps1 -AppName ${var.function_app_name} -GitRootFolder \"${var.git_root_folder}\" -AppRelativeFolder \"${var.app_relative_folder}\""
   }
 
   triggers = {
@@ -151,5 +145,6 @@ resource "null_resource" "publish_function_app" {
 
   depends_on = [
     "azurerm_function_app.function_app",
-  "null_resource.assign_msi_access"]
+    "null_resource.assign_msi_access"
+  ]
 }

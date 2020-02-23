@@ -31,19 +31,6 @@ Import-Module (Join-Path $moduleFolder "Logging.psm1") -Force
 Import-Module (Join-Path $moduleFolder "Common.psm1") -Force
 InitializeLogger -ScriptFolder $scriptFolder -ScriptName "Grant permission to app identity (MSI)"
 
-UsingScope("set location") {
-    $tempFolder = Join-Path $scriptFolder "temp"
-    if (-not (Test-Path $tempFolder)) {
-        New-Item $tempFolder -ItemType Directory -Force | Out-Null
-    }
-    $tempFolder = Join-Path $tempFolder $EnvName
-    if (-not (Test-Path $tempFolder)) {
-        New-Item $tempFolder -ItemType Directory -Force | Out-Null
-    }
-    $terraformOutputFolder = Join-Path $tempFolder "app"
-    Set-Location $terraformOutputFolder
-}
-
 UsingScope("picking function app MSI") {
     $functionApp = az functionapp show -n $AppName -g $ResourceGroupName | ConvertFrom-Json
     $systemAssignedIdentity = @{
