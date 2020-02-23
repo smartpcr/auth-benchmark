@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Blob;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -14,16 +13,21 @@ namespace HelloWorld
     /// <summary>
     /// write 100 records per second to blob storage
     /// </summary>
-    public static class TimerProducer
+    public class TimerProducer
     {
+        private readonly IBlobClient _blobClient;
         private static int _sequence = 0;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(0, 1);
 
+        public TimerProducer(IBlobClient blobClient)
+        {
+            _blobClient = blobClient;
+        }
+
         [FunctionName("TimerProducer")]
-        public static void Run(
+        public void Run(
             [TimerTrigger("*/1 * * * * *")]TimerInfo myTimer,
-            ILogger log,
-            IBlobClient blobClient)
+            ILogger log)
         {
             log.LogInformation($"C# Timer trigger function started at: {DateTime.Now}");
             var watch = Stopwatch.StartNew();
@@ -49,7 +53,7 @@ namespace HelloWorld
                 try
                 {
                     Task.Run(() =>
-                        blobClient.Upload(blobFolder, $"{telemetry.Sequence}.json", json, new CancellationToken()));
+                        _blobClient.Upload(blobFolder, $"{telemetry.Sequence}.json", json, new CancellationToken()));
                 }
                 catch (Exception ex)
                 {

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Common.Blob
 {
@@ -23,13 +24,13 @@ namespace Common.Blob
         private readonly BlobContainerClient _containerClient;
 
         public BlobClient(
-            BlobStorageSettings blobSettings,
+            IOptions<BlobStorageSettings> blobSettings,
             ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<BlobClient>();
-
+            var settings = blobSettings.Value;
             _logger.LogInformation($"accessing blob using default azure credential");
-            _containerClient = new BlobContainerClient(new Uri(blobSettings.ContainerEndpoint), new DefaultAzureCredential());
+            _containerClient = new BlobContainerClient(new Uri(settings.ContainerEndpoint), new DefaultAzureCredential());
             _containerClient.CreateIfNotExists();
         }
 

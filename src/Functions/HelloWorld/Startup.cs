@@ -16,8 +16,11 @@ namespace HelloWorld
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var services = builder.Services;
+            SetupDI(builder.Services);
+        }
 
+        private void SetupDI(IServiceCollection services)
+        {
             // IConfiguration
             var webjobHome = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
             // TODO: k8s job home folder
@@ -25,6 +28,8 @@ namespace HelloWorld
                 ? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
                 : $"{Environment.GetEnvironmentVariable("HOME")}/site/wwwroot";
             var runtimeRootFolder = webjobHome ?? home;
+            Console.WriteLine($"using base folder: {runtimeRootFolder}");
+
             var config = new ConfigurationBuilder()
                 .SetFileProvider(new PhysicalFileProvider(runtimeRootFolder))
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -33,17 +38,29 @@ namespace HelloWorld
                 .AddEnvironmentVariables()
                 .Build();
             services.AddSingleton<IConfiguration>(config);
+            Console.WriteLine("registered configuration");
 
             // options
-            services.Configure<AadSettings>(config.GetSection(nameof(AadSettings)));
-            services.Configure<VaultSettings>(config.GetSection(nameof(VaultSettings)));
-            services.Configure<BlobStorageSettings>(config.GetSection(nameof(BlobStorageSettings)));
-            services.Configure<DocDbSettings>(config.GetSection(nameof(DocDbSettings)));
+            services.ConfigureOptions<AadSettings>();
+            services.ConfigureOptions<VaultSettings>();
+            services.ConfigureOptions<BlobStorageSettings>();
+            services.ConfigureOptions<DocDbSettings>();
             services.AddOptions();
 
             // contract implementation
-            services.AddTransient<IBlobClient, BlobClient>();
-            services.AddTransient<IDocumentDbClient, DocumentDbClient>();
+            Console.WriteLine("registering blob client...");
+            services.AddSingleton<IBlobClient, BlobClient>();
+            Console.WriteLine("registered blob client");
+            services.AddSingleton<IDocumentDbClient, DocumentDbClient>();
+        }
+
+        private void ConfigureOptions<T>(IServiceCollection services) where T: class, new()
+        {
+            services.AddOptions<T>()
+                .Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection(typeof(T).Name).Bind(settings);
+                });
         }
     }
 }
