@@ -46,7 +46,14 @@ namespace HelloWorld
 
                 var json = JsonConvert.SerializeObject(telemetry);
                 var blobFolder = telemetry.TimeStamp.ToString("yyyy/MM/dd/HH/mm");
-                await _blobClient.Upload(blobFolder, $"{telemetry.Sequence}.json", json, new CancellationToken());
+                try
+                {
+                    await _blobClient.Upload(blobFolder, $"{telemetry.Sequence}.json", json, new CancellationToken());
+                }
+                catch (Exception ex)
+                {
+                    log.LogError(ex, "Failed to push data to blob");
+                }
             }
             log.LogInformation($"Timer trigger function finished, lapse: {watch.Elapsed}");
         }

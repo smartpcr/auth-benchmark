@@ -187,7 +187,8 @@ UsingScope("Setup terraform variables") {
         -Settings $settings
 
     $additionalFiles = @(
-        "PublishFunctionApp.ps1"
+        "PublishFunctionApp.ps1",
+        "GrantFunctionAppMsiPermissions.ps1"
     )
     CopyFiles -SourceFolder $appInfraFolder -TargetFolder $terraformOutputFolder -Files $additionalFiles
 }
