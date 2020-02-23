@@ -270,12 +270,16 @@ function Get-FolderHash {
         [string]$FolderPath
     )
 
+    $allowedFileExtensions = @(".cs", ".json", ".csproj", ".yaml", ".xml", ".ps1", "*.psm1")
     $FolderContent = New-Object System.Text.StringBuilder
     Get-ChildItem $FolderPath -Recurse | Where-Object {
         $filePath = $_.FullName
-        if ([System.IO.File]::Exists($filePath)) {
-            $fileHash = Get-FileHash $filePath
-            $FolderContent.Append("$($filePath)=$($fileHash.Hash)") | Out-Null
+        $fileExtension = [System.IO.Path]::GetExtension($filePath)
+        if ($allowedFileExtensions -contains $fileExtension) {
+            if ([System.IO.File]::Exists($filePath)) {
+                $fileHash = Get-FileHash $filePath
+                $FolderContent.Append("$($filePath)=$($fileHash.Hash)") | Out-Null
+            }
         }
     }
 

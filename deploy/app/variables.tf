@@ -87,3 +87,7 @@ variable "git_root_folder" {
 variable "app_relative_folder" {
   type = "string"
 }
+
+variable "function_app_hash" {
+  type = "string"
+}

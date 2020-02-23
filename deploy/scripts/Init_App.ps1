@@ -172,6 +172,11 @@ UsingScope("Ensure terraform backend") {
 
 UsingScope("Populate function app settings") {
     $settings.apps.helloWorld["gitRootFolder"] = $gitRootFolder
+    $functionAppFolder = Join-Path $gitRootFolder $settings.apps.helloWorld.projectFolder
+
+    LogStep -Message "computing app folder hash: $functionAppFolder"
+    $appHash = Get-FolderHash -FolderPath $functionAppFolder
+    $settings.apps.helloWorld["hash"] = $appHash
 }
 
 UsingScope("Setup terraform variables") {

@@ -118,5 +118,10 @@ resource "null_resource" "publish_function_app" {
     command = "pwsh ${path.module}/PublishFunctionApp.ps1 -AppName ${var.function_app_name} -GitRootFolder ${var.git_root_folder} -AppRelativeFolder ${var.app_relative_folder}"
   }
 
+  triggers = {
+    function_app_name = "${var.function_app_name}"
+    function_app_hash = "${var.function_app_hash}"
+  }
+
   depends_on = ["azurerm_function_app.function_app"]
 }
