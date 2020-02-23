@@ -5,11 +5,13 @@ using Common.Auth;
 using Common.Blob;
 using Common.DocDb;
 using Common.KeyVault;
+using HelloWorld;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 
+[assembly: FunctionsStartup(typeof(Startup))]
 namespace HelloWorld
 {
     public class Startup : FunctionsStartup
@@ -41,10 +43,10 @@ namespace HelloWorld
             Console.WriteLine("registered configuration");
 
             // options
-            services.ConfigureOptions<AadSettings>();
-            services.ConfigureOptions<VaultSettings>();
-            services.ConfigureOptions<BlobStorageSettings>();
-            services.ConfigureOptions<DocDbSettings>();
+            ConfigureOptions<AadSettings>(services);
+            ConfigureOptions<VaultSettings>(services);
+            ConfigureOptions<BlobStorageSettings>(services);
+            ConfigureOptions<DocDbSettings>(services);
             services.AddOptions();
 
             // contract implementation

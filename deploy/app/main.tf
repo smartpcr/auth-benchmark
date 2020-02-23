@@ -101,9 +101,9 @@ resource "azurerm_function_app" "function_app" {
   }
 
   identity {
-    type = "UserAssigned"
+    type = "SystemAssigned, UserAssigned"
     identity_ids = [
-      "${azurerm_user_assigned_identity.app_identity.id}"
+      "${azurerm_user_assigned_identity.app_identity.id}" # only system-assigned identity works!!
     ]
   }
 
