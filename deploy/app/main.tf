@@ -98,6 +98,7 @@ resource "azurerm_function_app" "function_app" {
     AnomaliesContainer             = "${var.anomalies_container}"
     AlertsContainer                = "${var.alerts_container}"
     CosmosDbAccount                = "${var.cosmosdb_account}"
+    WEBSITE_RUN_FROM_PACKAGE       = "1"
   }
 
   identity {
@@ -118,6 +119,7 @@ resource "null_resource" "assign_msi_access" {
     command = <<-EOT
       "pwsh ${path.module}/GrantFunctionAppMsiPermissions.ps1 \
       -AppName ${var.function_app_name} \
+      -GitRootFolder \"${var.git_root_folder}\" \
       -ResourceGroupName ${azurerm_resource_group.rg.name} \
       -SubscriptionId ${var.subscription_id} \
       -StorageAccountName ${var.telemetry_storage_account}"
@@ -125,7 +127,8 @@ resource "null_resource" "assign_msi_access" {
   }
 
   triggers = {
-    function_app_name = "${var.function_app_name}"
+    function_app_name         = "${var.function_app_name}"
+    telemetry_storage_account = "${var.telemetry_storage_account}"
   }
 
   depends_on = ["azurerm_function_app.function_app"]
@@ -133,7 +136,12 @@ resource "null_resource" "assign_msi_access" {
 
 resource "null_resource" "publish_function_app" {
   provisioner "local-exec" {
-    command = "pwsh ${path.module}/PublishFunctionApp.ps1 -AppName ${var.function_app_name} -GitRootFolder ${var.git_root_folder} -AppRelativeFolder ${var.app_relative_folder}"
+    command = <<-EOT
+      "pwsh ${path.module}/PublishFunctionApp.ps1 \
+      -AppName ${var.function_app_name} \
+      -GitRootFolder \"${var.git_root_folder}\" \
+      -AppRelativeFolder \"${var.app_relative_folder}\""
+    EOT
   }
 
   triggers = {
@@ -143,5 +151,5 @@ resource "null_resource" "publish_function_app" {
 
   depends_on = [
     "azurerm_function_app.function_app",
-    "null_resource.assign_msi_access"]
+  "null_resource.assign_msi_access"]
 }

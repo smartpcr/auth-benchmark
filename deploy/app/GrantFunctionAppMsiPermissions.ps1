@@ -1,57 +1,100 @@
 param(
-    [string]$AppName = "helloworld-dev-xd-func-app",
-    [string]$ResourceGroupName = "functions-rg",
-    [string]$SubscriptionId = "c5a015e6-a59b-45bd-a621-82f447f46034",
-    [string]$StorageAccountName = "functionsstoredev",
-    [string[]]$Containers = @("events", "anomalies", "alerts")
+    [Parameter(Position = 0, mandatory = $true)]
+    [string]$AppName,
+
+    [Parameter(Position = 1, mandatory = $true)]
+    [ValidateScript( { Test-Path $_ })]
+    [string]$GitRootFolder,
+
+    [Parameter(Position = 2, mandatory = $true)]
+    [string]$ResourceGroupName,
+
+    [Parameter(Position = 3, mandatory = $true)]
+    [string]$SubscriptionId,
+
+    [Parameter(Position = 4, mandatory = $true)]
+    [string]$StorageAccountName,
+
+    [string[]]$Containers
 )
 
-$functionApp = az functionapp show -n $AppName -g $ResourceGroupName | ConvertFrom-Json
-$systemAssignedIdentity = @{
-    principalId = $functionApp.identity.principalId
-    tenantId    = $functionApp.identity.tenantId
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+
+$deployFolder = Join-Path $gitRootFolder "deploy"
+$scriptFolder = Join-Path $deployFolder "scripts"
+if (-not (Test-Path $scriptFolder)) {
+    throw "Invalid script folder '$scriptFolder'"
 }
-if ($null -eq $systemAssignedIdentity.principalId) {
-    throw "Identity/SystemAssignedIdentity is not turned on"
+$moduleFolder = Join-Path $scriptFolder "modules"
+Import-Module (Join-Path $moduleFolder "Logging.psm1") -Force
+Import-Module (Join-Path $moduleFolder "Common.psm1") -Force
+InitializeLogger -ScriptFolder $scriptFolder -ScriptName "Grant permission to app identity (MSI)"
+
+UsingScope("set location") {
+    $tempFolder = Join-Path $scriptFolder "temp"
+    if (-not (Test-Path $tempFolder)) {
+        New-Item $tempFolder -ItemType Directory -Force | Out-Null
+    }
+    $tempFolder = Join-Path $tempFolder $EnvName
+    if (-not (Test-Path $tempFolder)) {
+        New-Item $tempFolder -ItemType Directory -Force | Out-Null
+    }
+    $terraformOutputFolder = Join-Path $tempFolder "app"
+    Set-Location $terraformOutputFolder
 }
 
-$storageAccount = az storage account show -n $StorageAccountName | ConvertFrom-Json
-$roleName = "Storage Blob Data Contributor"
-if ($null -eq $Containers -or $Containers.Count -eq 0) {
-    Write-Host "ensuring assignment for role '$roleName'"
-    [array]$existingAssignments = az role assignment list `
-        --role $roleName `
-        --assignee $systemAssignedIdentity.principalId `
-        --scope $storageAccount.id | ConvertFrom-Json
-    if ($null -eq $existingAssignments -or $existingAssignments.Count -eq 0) {
-        Write-Host "granting '$roleName' access to storage account '$StorageAccountName'"
-        az role assignment create `
-            --assignee $systemAssignedIdentity.principalId `
-            --role $roleName `
-            --scope $storageAccount.id | Out-Null
+UsingScope("picking function app MSI") {
+    $functionApp = az functionapp show -n $AppName -g $ResourceGroupName | ConvertFrom-Json
+    $systemAssignedIdentity = @{
+        principalId = $functionApp.identity.principalId
+        tenantId    = $functionApp.identity.tenantId
     }
-    else {
-        Write-Host "role assignment already exists"
+    if ($null -eq $systemAssignedIdentity.principalId) {
+        throw "Identity/SystemAssignedIdentity is not turned on"
     }
+    LogInfo -Message "MSI principal id: $($systemAssignedIdentity.principalId)"
 }
-else {
-    $Containers | ForEach-Object {
-        $containerName = $_
-        Write-Host "ensuring assignment for role '$roleName'"
-        $containerScope = "$($storageAccount.id)/blobServices/default/containers/$($containerName)"
+
+UsingScope("ensure access to storage account") {
+    $storageAccount = az storage account show -n $StorageAccountName | ConvertFrom-Json
+    $roleName = "Storage Blob Data Contributor"
+    if ($null -eq $Containers -or $Containers.Count -eq 0) {
+        LogInfo -Message "ensuring assignment for role '$roleName' and storage account '$StorageAccountName'"
         [array]$existingAssignments = az role assignment list `
             --role $roleName `
             --assignee $systemAssignedIdentity.principalId `
-            --scope $containerScope | ConvertFrom-Json
+            --scope $storageAccount.id | ConvertFrom-Json
         if ($null -eq $existingAssignments -or $existingAssignments.Count -eq 0) {
-            Write-Host "granting '$roleName' access to storage container: '$containerName'"
+            LogStep -Message "granting '$roleName' access to storage account '$StorageAccountName'"
             az role assignment create `
                 --assignee $systemAssignedIdentity.principalId `
                 --role $roleName `
-                --scope $containerScope | Out-Null
+                --scope $storageAccount.id | Out-Null
         }
         else {
-            Write-Host "role assignment already exists"
+            LogInfo -Message "role assignment already exists"
+        }
+    }
+    else {
+        $Containers | ForEach-Object {
+            $containerName = $_
+            LogStep -Message "ensuring assignment for role '$roleName' and container '$containerName'"
+            $containerScope = "$($storageAccount.id)/blobServices/default/containers/$($containerName)"
+            [array]$existingAssignments = az role assignment list `
+                --role $roleName `
+                --assignee $systemAssignedIdentity.principalId `
+                --scope $containerScope | ConvertFrom-Json
+            if ($null -eq $existingAssignments -or $existingAssignments.Count -eq 0) {
+                LogInfo -Message "granting '$roleName' access to storage container: '$containerName'"
+                az role assignment create `
+                    --assignee $systemAssignedIdentity.principalId `
+                    --role $roleName `
+                    --scope $containerScope | Out-Null
+            }
+            else {
+                LogInfo -Message "role assignment already exists"
+            }
         }
     }
 }
